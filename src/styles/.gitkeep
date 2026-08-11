@@ -1,0 +1,13 @@
+Contains common styling that applies across the application.
+
+eg:
+:root {
+    --primary-color: #173b7a;
+    --border-radius: 8px;
+    --page-padding: 24px;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
