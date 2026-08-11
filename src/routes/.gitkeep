@@ -1,0 +1,13 @@
+Defines which URL opens which page and whether that route requires authentication or permission.
+
+eg:
+<Routes>
+    <Route path="/login" element={<LoginPage />} />
+
+    <Route element={<ProtectedRoute />}>
+        <Route element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<DashboardHome />} />
+            <Route path="/lms/courses" element={<CoursesPage />} />
+        </Route>
+    </Route>
+</Routes>
