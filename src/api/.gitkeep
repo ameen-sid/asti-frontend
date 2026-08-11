@@ -1,0 +1,4 @@
+Contains the common Axios configuration used by all LMS and Dashboard services.
+
+eg: apiConnector.ts for axios interceptor
+    apis.ts for api paths
