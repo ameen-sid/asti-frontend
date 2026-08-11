@@ -1,0 +1,12 @@
+Contains reusable UI pieces used only inside Dashboard.
+
+eg:
+function KpiCard({ title, value, percentage }) {
+    return (
+        <div className="kpi-card">
+            <span>{title}</span>
+            <h2>{value}</h2>
+            <small>{percentage}</small>
+        </div>
+    );
+}

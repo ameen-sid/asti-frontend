@@ -1,0 +1,25 @@
+Contains complete Dashboard screens.
+
+eg:
+function DashboardHome() {
+  const { data, loading } = useDashboardData();
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  return (
+    <div>
+      <h1>Dashboard</h1>
+      <KpiCard
+        title="Total Manpower"
+        value={data.totalManpower}
+      />
+
+      <KpiCard
+        title="Present"
+        value={data.present}
+      />
+    </div>
+  );
+}

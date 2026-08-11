@@ -1,0 +1,7 @@
+Contains pure calculation or transformation functions used only by Dashboard.
+
+eg:
+export function calculateAttendanceRate(present, total) {
+  if (!total) return 0;
+  return Number(((present / total) * 100).toFixed(2));
+}
