@@ -1,0 +1,10 @@
+Contains reusable UI components that can be used by Dashboard, LMS, CMS, or any other module.
+
+eg:
+function Button({ children, loading = false, ...props }) {
+    return (
+        <button disabled={loading} {...props}>
+            {loading ? "Please wait..." : children}
+        </button>
+    );
+}

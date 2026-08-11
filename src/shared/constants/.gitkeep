@@ -1,0 +1,8 @@
+Contains fixed values that are reused throughout the application instead of hardcoding strings everywhere.
+
+eg:
+export const USER_ROLES = {
+    ADMIN: "ADMIN",
+    TRAINER: "TRAINER",
+    EMPLOYEE: "EMPLOYEE",
+};
