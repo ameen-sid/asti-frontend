@@ -1,0 +1,12 @@
+Contains reusable components that belong specifically to LMS.
+
+eg:
+function CourseCard({ course }) {
+  return (
+    <div className="course-card">
+      <h3>{course.name}</h3>
+      <p>Duration: {course.duration} Minutes</p>
+      <span>{course.status}</span>
+    </div>
+  );
+}

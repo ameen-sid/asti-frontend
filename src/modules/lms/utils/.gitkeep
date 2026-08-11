@@ -1,0 +1,10 @@
+Contains LMS-specific calculations and transformations.
+
+eg:
+export function calculateScore(correctAnswers, totalQuestions) {
+  if (!totalQuestions) return 0;
+
+  return Math.round(
+    (correctAnswers / totalQuestions) * 100
+  );
+}

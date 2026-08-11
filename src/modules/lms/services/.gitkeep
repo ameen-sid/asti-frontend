@@ -1,0 +1,21 @@
+Contains API requests related only to LMS.
+
+eg:
+import api from "../../../api/api";
+
+export async function getCourses() {
+  const response = await api.get(
+    "/lms/courses"
+  );
+
+  return response.data.data;
+}
+
+export async function createCourse(payload) {
+  const response = await api.post(
+    "/lms/courses",
+    payload
+  );
+
+  return response.data.data;
+}

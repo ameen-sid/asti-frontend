@@ -1,0 +1,22 @@
+Contains complete LMS screens.
+
+eg:
+function CoursesPage() {
+  const { courses, loading } = useCourses();
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  return (
+    <div>
+      <h1>Courses</h1>
+      {courses.map((course) => (
+        <CourseCard
+          key={course.id}
+          course={course}
+        />
+      ))}
+    </div>
+  );
+}
