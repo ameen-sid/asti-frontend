@@ -1,0 +1,3 @@
+Used for GitHub Actions CI/CD automation such as installing dependencies, running tests, building the app, and deploying after merge.
+
+eg: ci.yml, deploy-production.yml
