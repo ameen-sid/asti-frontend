@@ -1,0 +1,181 @@
+.requirement-page {
+  padding: 1.5rem;
+  background-color: #f8f9fa; /* Matches standard light gray bg */
+  min-height: 100vh;
+}
+
+.breadcrumb-section {
+  display: flex;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumb-section svg {
+  margin-right: 0.5rem;
+}
+
+.filter-section {
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  border: 1px solid #dee2e6;
+  border-radius: 2rem;
+  padding: 0.375rem 1rem;
+  color: #495057;
+  background-color: #fff;
+  min-width: 150px;
+}
+
+.filter-date-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filter-date-wrapper span {
+  position: absolute;
+  top: 10px;
+  left: -40px;
+  background: transparent;
+  padding: 0 5px;
+  font-size: 0.875rem;
+  color: #333;
+}
+
+.filter-date-wrapper {
+  margin-left: 30px;
+}
+
+.pink-theme {
+  border: 1px solid #e83e8c !important;
+  color: #e83e8c !important;
+  background-color: #fff0f5 !important;
+  border-radius: 2rem !important;
+}
+
+.filter-date.pink-theme {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.records-section {
+  background: #fff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  padding: 1.5rem;
+}
+
+.records-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.records-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.records-icon {
+  background: #5d49d6;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.records-title {
+  font-weight: 700;
+  margin: 0;
+}
+
+.records-subtitle {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.add-btn {
+  background: #5d49d6;
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.5rem 1.5rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-btn:hover {
+  background: #4b3bb0;
+}
+
+.records-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.records-table th {
+  padding: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #495057;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.records-table th.purple-header {
+  background-color: #7b61ff;
+  color: white;
+  text-align: center;
+  border-left: 1px solid white;
+}
+
+.records-table th.purple-header:first-of-type {
+  border-left: none;
+}
+
+.records-table td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.status-approved {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.status-pending {
+  background-color: #fef3c7;
+  color: #d97706;
+}

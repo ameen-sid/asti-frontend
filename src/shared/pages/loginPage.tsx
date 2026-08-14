@@ -44,14 +44,12 @@ function LoginPage() {
     if (isFormValid) {
       if (formData.username === "test" && formData.password === "12345678") {
         console.log("login successful");
-        navigate("/portal");
+        navigate("/admin-portals");
       } else {
         console.log("login failed");
-        // showToast();
       }
     } else {
       console.log("login failed");
-      //   showToast();
     }
   };
   return (
