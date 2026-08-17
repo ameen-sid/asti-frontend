@@ -1,0 +1,21 @@
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 10px;
+  font-size: 0.8rem !important;
+  white-space: nowrap;
+}
+td {
+  border-bottom: 1px solid #dddddd;
+  text-align: left;
+  padding: 10px;
+  white-space: nowrap;
+  font-size: 0.8rem !important;
+}
+
