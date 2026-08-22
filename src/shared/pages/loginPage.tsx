@@ -2,77 +2,102 @@ import React from "react";
 import "../../styles/loginPage.style.css";
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import logo from '../../assets/asti-india-logo.png'; 
+import logo from '../../assets/asti-india-logo.png';
+import { loginAdmin } from "../services/authService";
 
 function LoginPage() {
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const [isNameValid, setIsNameValid] = useState(false);
+  const [emailError, setEmailError] = useState("");
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [isFormValid, setIsFormValid] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
-  const handleChange = (e:any) => {
+  const validateEmail = (email: string) => {
+    if (!email || email.trim() === "") {
+      return "Email cannot be empty";
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address";
+    }
+    return "";
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    if (name === "username") {
-      if (value == "") {
-        setIsNameValid(true);
-        setIsFormValid(false);
-      } else {
-        setIsNameValid(false);
-        setIsFormValid(true);
-      }
+    if (name === "email") {
+      const errorMsg = validateEmail(value);
+      setEmailError(errorMsg);
     }
     if (name === "password") {
-      if (value.length < 8 && value == "") {
+      if (!value || value.length < 1) {
         setIsPasswordValid(true);
-        setIsFormValid(false);
       } else {
         setIsPasswordValid(false);
-        setIsFormValid(true);
       }
     }
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
+    setLoginError("");
   };
-  const handleLogin = (e:any) => {
-    if (isFormValid) {
-      if (formData.username === "test" && formData.password === "12345678") {
-        console.log("login successful");
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const errorMsg = validateEmail(formData.email);
+    if (errorMsg) {
+      setEmailError(errorMsg);
+      return;
+    }
+    if (!formData.password) {
+      setIsPasswordValid(true);
+      return;
+    }
+
+    try {
+      const res = await loginAdmin(formData.email, formData.password);
+      console.log("Login response:", res);
+      if (res?.success) {
         navigate("/admin-portals");
-      } else {
-        console.log("login failed");
       }
-    } else {
-      console.log("login failed");
+    } catch (err: any) {
+      console.error("Login error:", err);
+      if (err.response?.data?.message) {
+        setLoginError(err.response.data.message);
+      } else {
+        setLoginError("Login failed. Please check your credentials.");
+      }
     }
   };
+
   return (
     <>
       <div className="home-container d-flex flex-column align-items-center justify-content-center p-5">
         <img className="h-40px" src={logo} alt="" />
-        <div className="form card border p-5 w-400px rounded-3 m-5">
+        <form onSubmit={handleLogin} className="form card border p-5 w-400px rounded-3 m-5">
           <p className="form-label mt-3 d-flex align-items-center">
-            Username <p className="text-danger ms-1">*</p>
+            Email <span className="text-danger ms-1">*</span>
           </p>
           <input
-            name="username"
+            name="email"
             className="form-control"
-            type="text"
-            placeholder="username"
-            value={formData.username}
+            type="email"
+            placeholder="name@example.com"
+            value={formData.email}
             onChange={handleChange}
           />
-          {isNameValid && (
-            <p className="text-danger">username can not be empty</p>
+          {emailError && (
+            <p className="text-danger mt-1 mb-0">{emailError}</p>
           )}
+
           <p className="form-label mt-3 d-flex align-items-center">
-            Password <p className="text-danger ms-1">*</p>
+            Password <span className="text-danger ms-1">*</span>
           </p>
           <div className="d-flex align-items-center">
             <input
@@ -92,16 +117,22 @@ function LoginPage() {
             </button>
           </div>
           {isPasswordValid && (
-            <p className="text-danger">password must be of 8 characters</p>
+            <p className="text-danger mt-1 mb-0">Password cannot be empty</p>
           )}
+
+          {loginError && (
+            <div className="alert alert-danger mt-3 mb-0" role="alert">
+              {loginError}
+            </div>
+          )}
+
           <button
-            onClick={handleLogin}
             className="gradient-bg btn text-white my-3"
             type="submit"
           >
             Login
           </button>
-        </div>
+        </form>
       </div>
     </>
   );

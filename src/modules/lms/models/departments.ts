@@ -1,28 +1,38 @@
-export interface Machine {
-  id: string;
+export interface SubDepartment {
+  id: string | number;
   name: string;
-}
-
-export interface SubSection {
-  id: string;
-  name: string;
-  machines: Machine[];
-}
-
-export interface Line {
-  id: string;
-  name: string;
-  subsections: SubSection[];
-}
-
-export interface Section {
-  id: string;
-  name: string;
-  lines: Line[];
+  departmentId?: string | number;
+  sections?: Section[];
 }
 
 export interface Department {
-  id: string;
+  id: string | number;
   name: string;
-  sections: Section[];
+  subDepartments?: SubDepartment[];
+}
+
+export interface Section {
+  id: string | number;
+  name: string;
+  departmentId?: string | number;
+  subDepartmentId?: string | number;
+  lines?: Line[];
+}
+
+export interface Line {
+  id: string | number;
+  name: string;
+  departmentId?: string | number;
+  subDepartmentId?: string | number;
+  sectionId?: string | number;
+  machines?: Machine[];
+}
+
+export interface Machine {
+  id: string | number;
+  name: string;
+  departmentId?: string | number;
+  subDepartmentId?: string | number;
+  sectionId?: string | number;
+  lineId?: string | number;
 }
