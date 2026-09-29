@@ -156,6 +156,9 @@ export const SAMPLE_HINDI_SECTIONS: SectionItem[] = [
 
 export const INITIAL_SAMPLE_PAPER: QuestionPaper = {
   id: "QP-ASTI-01",
+  courseId: 1,
+  courseName: "Connector Assembly Training",
+  departmentId: 1,
   title: "ऑपरेटर तकनीकी एवं सुरक्षा मूल्यांकन प्रश्न पत्र",
   subTitle: "Technical & Safety Evaluation Assessment",
   description: "मानकीकृत कार्यप्रणाली (SOP), 5S, PPE एवं गुणवत्ता नियंत्रण से संबंधित आवश्यक मूल्यांकन प्रश्न पत्र।",
@@ -196,9 +199,48 @@ export const questionPaperService = {
     }
   },
 
-  getById(id: string | number): QuestionPaper | null {
+  getByCourseId(courseId: number | string | null | undefined): QuestionPaper[] {
+    if (!courseId && courseId !== 0) return [];
     const list = this.getAll();
-    return list.find((p) => String(p.id) === String(id)) || null;
+    return list.filter((p) => String(p.courseId) === String(courseId));
+  },
+
+  getByDepartmentId(deptId: number | string | null | undefined): QuestionPaper[] {
+    if (!deptId && deptId !== 0) return [];
+    const list = this.getAll();
+    return list.filter((p) => String(p.departmentId) === String(deptId));
+  },
+
+  getById(id: string | number | null | undefined): QuestionPaper | null {
+    if (!id) return null;
+    const strId = String(id).trim();
+    if (
+      !strId ||
+      strId.toLowerCase() === 'no paper id provided' ||
+      strId.toLowerCase() === 'undefined' ||
+      strId.toLowerCase() === 'null'
+    ) {
+      return null;
+    }
+    const list = this.getAll();
+    // 1. Direct ID match (case-insensitive)
+    const exact = list.find((p) => String(p.id).trim().toLowerCase() === strId.toLowerCase());
+    if (exact) return exact;
+
+    // 2. Code match (e.g., if code like ASTI-QP-SOP-01 is passed instead of ID)
+    const byCode = list.find((p) => p.code && String(p.code).trim().toLowerCase() === strId.toLowerCase());
+    if (byCode) return byCode;
+
+    // 3. Match without prefix or substring
+    const byPartial = list.find((p) => String(p.id).toLowerCase().includes(strId.toLowerCase()) || (p.code && String(p.code).toLowerCase().includes(strId.toLowerCase())));
+    if (byPartial) return byPartial;
+
+    return null;
+  },
+
+  getDefaultPaper(): QuestionPaper {
+    const list = this.getAll();
+    return list[0] || INITIAL_SAMPLE_PAPER;
   },
 
   save(paper: Partial<QuestionPaper> & { title: string }): QuestionPaper {
@@ -228,6 +270,9 @@ export const questionPaperService = {
       subTitle: paper.subTitle || 'Technical Assessment',
       description: paper.description || '',
       code: paper.code || 'ASTI-QP-SOP-01',
+      courseId: paper.courseId,
+      courseName: paper.courseName,
+      departmentId: paper.departmentId,
       department: paper.department || 'Production',
       subDepartment: paper.subDepartment || 'Section A',
       lineSection: paper.lineSection || 'Line 1',
@@ -235,6 +280,7 @@ export const questionPaperService = {
       passingScore: Number(paper.passingScore) || 70,
       status: paper.status || 'PUBLISHED',
       sections: (paper.sections as SectionItem[]) || SAMPLE_HINDI_SECTIONS,
+      trainingFiles: paper.trainingFiles || [],
       createdAt: now,
       updatedAt: now,
     };

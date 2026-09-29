@@ -46,7 +46,7 @@
 }
 
 .stat-card-label {
-  font-size: 0.72rem;
+  font-size: 0.6rem;
   font-weight: 600;
   color: #64748b;
   text-transform: uppercase;
@@ -55,7 +55,7 @@
 
 .stat-card-value {
   font-weight: 700;
-  font-size: 1.45rem;
+  font-size: 1rem;
   margin-top: 0.25rem;
 }
 
@@ -259,7 +259,7 @@
   transition: all 0.2s ease;
 }
 
-.btn-subdept-nav:hover {  
+.btn-subdept-nav:hover {
   background: #1d4ed8;
   color: #ffffff;
   border-color: transparent;

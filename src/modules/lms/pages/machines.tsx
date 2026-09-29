@@ -129,22 +129,7 @@ export default function Machines() {
 
   return (
     <div className="h-auto bg-white shadow-sm rounded border p-4">
-      {/* Breadcrumb */}
-      <nav aria-label="breadcrumb" className="mb-2">
-        <ol className="breadcrumb mb-0 breadcrumb-font-size">
-          <li className="breadcrumb-item">
-            <Link to="/lms/departments" className="breadcrumb-link-primary">
-              Departments
-            </Link>
-          </li>
-          <li className="breadcrumb-item text-muted">{departmentName}</li>
-          <li className="breadcrumb-item text-muted">{subDepartmentName}</li>
-          <li className="breadcrumb-item text-muted">{lineName}</li>
-          <li className="breadcrumb-item active text-dark fw-bold" aria-current="page">
-            Machines
-          </li>
-        </ol>
-      </nav>
+
 
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">

@@ -20,7 +20,7 @@ export async function createDepartment(deptName: string) {
 
 export async function getDepartment(sortOrder: 'asc' | 'desc' = 'asc', sortBy: 'id' | 'name' | 'createdAt' = 'id') {
     const res = await axios.get(
-        `${API_BASE_URL}/v1/departments`,
+        `${API_BASE_URL}/v1/departments?sortBy=${sortBy}&sortOrder=${sortOrder}`,
         getHeaders()
     );
     return res;

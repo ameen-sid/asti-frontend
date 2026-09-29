@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import DashboardFilterBar from "../components/dashboardFilterBar";
 import profileSvg1 from "../../../assets/purple-profile.png";
 import profileSvg2 from "../../../assets/blue-profile.png";
 import profileSvg3 from "../../../assets/blue-profile.png";
@@ -390,112 +391,16 @@ function CTQMonitoring() {
     <>
       <div className="h-auto shadow border p-4">
         {/* FILTERS DIV--------------------------------------------- */}
-        <div
+        <DashboardFilterBar
+          selectedFilters={selectedFilters}
+          setSelectedFilters={setSelectedFilters}
+          handleClearFilters={handleClearFilters}
+          fromDate={fromDate}
+          setFromDate={setFromDate}
+          toDate={toDate}
+          setToDate={setToDate}
           className="ctq-filter-bar border rounded-4 shadow-sm p-3 mt-3"
-          style={{ background: "#fafbff" }}
-        >
-          <div className="d-flex align-items-center justify-content-between">
-            <div className="row w-100 g-0 mt-3 d-flex justify-content-between align-items-center">
-              {/* Filter label */}
-              <div className="col-1 d-flex align-items-center mb-3">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#1d4ed8"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-                </svg>
-                <span
-                  className="ms-1 fw-semibold"
-                  style={{ fontSize: "0.82rem", color: "#3d3d3d" }}
-                >
-                  Filters
-                </span>
-              </div>
-
-              <div className="col-11 flex-wrap d-flex justify-content-start">
-                {/* Select filters */}
-                {["Units", "Departments", "Sub Departments", "Sections", "Lines", "Shifts"].map(
-                  (label) => (
-                    <select
-                      key={label}
-                      className="ctq-filter-select me-1 mb-3"
-                      value={selectedFilters[label] || ""}
-                      onChange={(e) =>
-                        setSelectedFilters((prev) => ({ ...prev, [label]: e.target.value }))
-                      }
-                    >
-                      <option value="">{label}</option>
-                      <option value="Option 1">Option 1</option>
-                      <option value="Option 2">Option 2</option>
-                      <option value="Option 3">Option 3</option>
-                    </select>
-                  ),
-                )}
-
-                {/* Clear button */}
-                <button
-                  type="button"
-                  className="ctq-filter-clear-btn mb-3"
-                  onClick={handleClearFilters}
-                  title="Clear all filters"
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                  Clear
-                </button>
-
-                {/* Date range filters */}
-
-                <div className="d-flex align-items-center gap-2 mb-3 ms-2">
-                  <label
-                    style={{
-                      fontSize: "0.72rem",
-                      color: "#888",
-                      fontWeight: 600,
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    FROM
-                  </label>
-                  <input
-                    type="date"
-                    className="ctq-filter-date-input"
-                    value={fromDate}
-                    onChange={(e) => setFromDate(e.target.value)}
-                  />
-                </div>
-                <div className="d-flex align-items-center gap-2 mb-3 ms-2">
-                  <label
-                    style={{
-                      fontSize: "0.72rem",
-                      color: "#888",
-                      fontWeight: 600,
-                      letterSpacing: "0.03em",
-                    }}
-                  >
-                    TO
-                  </label>
-                  <input
-                    type="date"
-                    className="ctq-filter-date-input"
-                    value={toDate}
-                    onChange={(e) => setToDate(e.target.value)}
-                  />
-                </div>
-              </div>
-
-
-            </div>
-          </div>
-        </div>
+        />
 
         {/* FOUR KPI CARDS ----------------------  */}
         <div className="row g-0 g-0 my-4">
@@ -505,11 +410,8 @@ function CTQMonitoring() {
                 <svg width="43px" height="43px" viewBox="0 0 24 24" fill="#1e40af" xmlns="http://www.w3.org/2000/svg">
 
                   <rect x="0" fill="none" width="24" height="24"></rect>
-
                   <g>
-
                     <path d="M24 14.6c0 .6-1.2 1-2.6 1.2-.9-1.7-2.7-3-4.8-3.9.2-.3.4-.5.6-.8h.8c3.1-.1 6 1.8 6 3.5zM6.8 11H6c-3.1 0-6 1.9-6 3.6 0 .6 1.2 1 2.6 1.2.9-1.7 2.7-3 4.8-3.9l-.6-.9zm5.2 1c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zm0 1c-4.1 0-8 2.6-8 5 0 2 8 2 8 2s8 0 8-2c0-2.4-3.9-5-8-5zm5.7-3h.3c1.7 0 3-1.3 3-3s-1.3-3-3-3c-.5 0-.9.1-1.3.3.8 1 1.3 2.3 1.3 3.7 0 .7-.1 1.4-.3 2zM6 10h.3C6.1 9.4 6 8.7 6 8c0-1.4.5-2.7 1.3-3.7C6.9 4.1 6.5 4 6 4 4.3 4 3 5.3 3 7s1.3 3 3 3z"></path>
-
                   </g>
 
                 </svg>

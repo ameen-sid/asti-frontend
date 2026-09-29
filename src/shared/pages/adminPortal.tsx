@@ -36,7 +36,7 @@ function AdminPortal() {
       title: "CMS",
       description:
         "Create, manage, and optimize content effortlessly in one powerful platform.",
-      path: "#",
+      path: "/cms",
       portalName: "cms",
       color: "blue",
     },

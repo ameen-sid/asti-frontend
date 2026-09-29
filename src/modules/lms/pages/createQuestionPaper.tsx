@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import "../../../styles/createqQuestionPaper.css";
-import type { QuestionPaper, SectionItem, OptionItem, QuestionItem } from "../models/questionPaper";
+import type { QuestionPaper, SectionItem, OptionItem, QuestionItem, TrainingFile } from "../models/questionPaper";
 import { questionPaperService } from "../services/questionPaperService";
+import { getDepartment } from "../services/departmentService";
+import { getSubDepartments } from "../services/subDepartmentService";
+import { getLines } from "../services/lineService";
+import type { Department, SubDepartment, Line as ApiLine } from "../models/departments";
+import type { Course } from "../models/lmsTypes";
+import { INITIAL_COURSES } from "../utils/mockLmsData";
 
 const DEFAULT_OPTIONS: OptionItem[] = [
   { id: "opt-1", label: "A", text: "Option A" },
@@ -20,22 +26,92 @@ const OPTION_LETTERS = ["A", "B", "C", "D", "E", "F"];
 export function CreateQuestionPaper() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const paperIdParam = searchParams.get("id");
+
+  // Context passed from Course
+  const stateCourseId = location.state?.courseId || searchParams.get("courseId");
+  const stateDepartmentId = location.state?.departmentId || searchParams.get("departmentId");
+  const stateCourseName = location.state?.courseName || searchParams.get("courseName");
+  const stateDepartment = location.state?.department || searchParams.get("department");
 
   // Form State for Paper Config
   const [paperId, setPaperId] = useState<string | number | null>(paperIdParam);
+  const [courseId, setCourseId] = useState<number | string | null>(stateCourseId || null);
+  const [courseName, setCourseName] = useState<string>(stateCourseName || "");
+  const [departmentId, setDepartmentId] = useState<number | string | null>(stateDepartmentId || null);
   const [title, setTitle] = useState<string>("Operator Technical and Safety Assessment Question Paper");
   const [subTitle, setSubTitle] = useState<string>("Technical & Safety Evaluation Assessment");
   const [description, setDescription] = useState<string>(
     "मानकीकृत कार्यप्रणाली (SOP), 5S, PPE एवं गुणवत्ता नियंत्रण से संबंधित आवश्यक मूल्यांकन प्रश्न पत्र।"
   );
   const [code, setCode] = useState<string>("ASTI-QP-SOP-01");
-  const [department, setDepartment] = useState<string>("Production");
-  const [subDepartment, setSubDepartment] = useState<string>("Section A");
-  const [lineSection, setLineSection] = useState<string>("Line 1");
+  const [department, setDepartment] = useState<string>(stateDepartment || "");
+  const [subDepartment, setSubDepartment] = useState<string>("");
+  const [lineSection, setLineSection] = useState<string>("");
   const [allowedTime, setAllowedTime] = useState<number>(30);
   const [passingScore, setPassingScore] = useState<number>(70);
   const [paperStatus, setPaperStatus] = useState<"PUBLISHED" | "DRAFT" | "ARCHIVED">("PUBLISHED");
+
+  // API Master Data for selects
+  const [departmentsList, setDepartmentsList] = useState<Department[]>([]);
+  const [subDepartmentsList, setSubDepartmentsList] = useState<SubDepartment[]>([]);
+  const [linesList, setLinesList] = useState<ApiLine[]>([]);
+  const [coursesList, setCoursesList] = useState<Course[]>([]);
+
+  const isFromCourse = Boolean(stateCourseId);
+
+  // Load departments, sub-departments, lines, and courses
+  useEffect(() => {
+    Promise.allSettled([
+      getDepartment(),
+      getSubDepartments(),
+      getLines(),
+    ]).then(([deptRes, subDeptRes, lineRes]) => {
+      if (deptRes.status === "fulfilled") {
+        const depts = deptRes.value?.data?.data || [];
+        setDepartmentsList(depts);
+        if (depts.length > 0 && !department && !stateDepartment) {
+          setDepartment(depts[0].name);
+        }
+      }
+      if (subDeptRes.status === "fulfilled") {
+        setSubDepartmentsList(subDeptRes.value?.data?.data || []);
+      }
+      if (lineRes.status === "fulfilled") {
+        setLinesList(lineRes.value?.data?.data || []);
+      }
+    });
+
+    // Load available courses
+    const savedCourses = localStorage.getItem("lms_courses");
+    let loadedCourses: Course[] = INITIAL_COURSES;
+    if (savedCourses) {
+      try {
+        const parsed = JSON.parse(savedCourses);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          loadedCourses = parsed;
+        }
+      } catch { }
+    }
+    setCoursesList(loadedCourses);
+
+    // If opened with course context, lock to that course
+    if (stateCourseId) {
+      const match = loadedCourses.find((c) => String(c.id) === String(stateCourseId));
+      if (match) {
+        setCourseId(match.id);
+        setCourseName(match.title);
+        if (match.departmentId) setDepartmentId(match.departmentId);
+        if (match.department) setDepartment(match.department);
+      }
+    }
+  }, [stateCourseId, stateDepartment]);
+
+  const selectedDeptObj = departmentsList.find((d) => d.name === department);
+  const filteredSubDepts = subDepartmentsList.filter(
+    (s) => !selectedDeptObj || String(s.departmentId) === String(selectedDeptObj.id)
+  );
 
   // Sections & Questions State
   const [sections, setSections] = useState<SectionItem[]>(INITIAL_SECTIONS);
@@ -48,12 +124,22 @@ export function CreateQuestionPaper() {
   const [newSectionSubtitle, setNewSectionSubtitle] = useState<string>("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Training Materials State
+  const [trainingFiles, setTrainingFiles] = useState<TrainingFile[]>([]);
+
   // Load existing paper if editing
   useEffect(() => {
     if (paperIdParam) {
       const existing = questionPaperService.getById(paperIdParam);
       if (existing) {
         setPaperId(existing.id);
+        if (existing.courseId) {
+          setCourseId(existing.courseId);
+          setCourseName(existing.courseName || "");
+        }
+        if (existing.departmentId) {
+          setDepartmentId(existing.departmentId);
+        }
         setTitle(existing.title || "");
         setSubTitle(existing.subTitle || "");
         setDescription(existing.description || "");
@@ -70,6 +156,9 @@ export function CreateQuestionPaper() {
           if (existing.sections[0].questions.length > 0) {
             setActiveQuestionId(existing.sections[0].questions[0].id);
           }
+        }
+        if (existing.trainingFiles && existing.trainingFiles.length > 0) {
+          setTrainingFiles(existing.trainingFiles);
         }
       }
     }
@@ -255,6 +344,14 @@ export function CreateQuestionPaper() {
       alert("Please enter a Test Paper Title");
       return;
     }
+    if (!department.trim()) {
+      alert("Department is required. Please select a valid department.");
+      return;
+    }
+    if (!courseId) {
+      alert("Course is required. Please select a course for this question paper.");
+      return;
+    }
 
     const paperData: Partial<QuestionPaper> & { title: string } = {
       id: paperId || undefined,
@@ -262,6 +359,9 @@ export function CreateQuestionPaper() {
       subTitle: subTitle.trim(),
       description: description.trim(),
       code: code.trim() || "ASTI TECHNICAL EVALUATION TEST PAPER",
+      courseId: courseId,
+      courseName: courseName || undefined,
+      departmentId: departmentId || undefined,
       department,
       subDepartment,
       lineSection,
@@ -269,6 +369,7 @@ export function CreateQuestionPaper() {
       passingScore: Number(passingScore) || 20,
       status: paperStatus,
       sections,
+      trainingFiles,
     };
 
     const saved = questionPaperService.save(paperData);
@@ -277,7 +378,7 @@ export function CreateQuestionPaper() {
 
     setTimeout(() => {
       setToastMessage(null);
-      navigate("/lms/course-management");
+      navigate(isFromCourse ? "/lms/courses" : "/lms/course-management");
     }, 1200);
   };
 
@@ -289,6 +390,9 @@ export function CreateQuestionPaper() {
       subTitle: subTitle.trim(),
       description: description.trim(),
       code: code.trim() || "ASTI TECHNICAL EVALUATION TEST PAPER",
+      courseId: courseId || undefined,
+      courseName: courseName || undefined,
+      departmentId: departmentId || undefined,
       department,
       subDepartment,
       lineSection,
@@ -296,6 +400,7 @@ export function CreateQuestionPaper() {
       passingScore: Number(passingScore) || 20,
       status: paperStatus,
       sections,
+      trainingFiles,
     };
     const saved = questionPaperService.save(paperData);
     setPaperId(saved.id);
@@ -441,6 +546,111 @@ export function CreateQuestionPaper() {
               />
             </div>
           </div>
+          {/* Course Context Banner if opened from Course */}
+          {courseId && (
+            <div
+              className="alert alert-primary d-flex align-items-center justify-content-between rounded-3 py-2 px-3 mb-3 border-0 shadow-sm"
+              style={{ background: "linear-gradient(135deg, #eff6ff 0%, #e0e7ff 100%)" }}
+            >
+              <div className="d-flex align-items-center gap-2 flex-wrap">
+                <span className="badge bg-primary text-white rounded-pill px-2 py-1" style={{ fontSize: "0.72rem" }}>
+                  COURSE
+                </span>
+                <strong className="text-dark" style={{ fontSize: "0.95rem" }}>
+                  {courseName || `Course #${courseId}`}
+                </strong>
+                <span className="text-muted ms-2" style={{ fontSize: "0.85rem" }}>
+                  Department: <strong className="text-primary">{department || "Production"}</strong>
+                </span>
+              </div>
+              <span className="badge bg-white text-primary border" style={{ fontSize: "0.76rem" }}>
+                {isFromCourse ? "Preselected from Course" : "Linked Course"}
+              </span>
+            </div>
+          )}
+
+          <div className="row g-3 align-items-center mt-1">
+            <div className="col-md-6 px-2">
+              <label className="qp-config-label">Course (Master Entity) *</label>
+              {isFromCourse ? (
+                <div className="input-group">
+                  <input
+                    type="text"
+                    className="form-control bg-light"
+                    value={courseName || `Course #${courseId}`}
+                    disabled
+                  />
+                  <span className="input-group-text bg-white text-muted" style={{ fontSize: "0.75rem" }}>
+                    Locked
+                  </span>
+                </div>
+              ) : (
+                <select
+                  className="form-select"
+                  value={courseId || ""}
+                  onChange={(e) => {
+                    const selId = e.target.value;
+                    const cMatch = coursesList.find((c) => String(c.id) === selId);
+                    if (cMatch) {
+                      setCourseId(cMatch.id);
+                      setCourseName(cMatch.title);
+                      if (cMatch.departmentId) setDepartmentId(cMatch.departmentId);
+                      if (cMatch.department) setDepartment(cMatch.department);
+                    } else {
+                      setCourseId(null);
+                      setCourseName("");
+                    }
+                  }}
+                  required
+                >
+                  <option value="">Select Course</option>
+                  {coursesList.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.title} ({c.department})
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+
+            <div className="col-md-6 px-2">
+              <label className="qp-config-label">Department *</label>
+              {isFromCourse ? (
+                <div className="input-group">
+                  <input
+                    type="text"
+                    className="form-control bg-light"
+                    value={department}
+                    disabled
+                  />
+                  <span className="input-group-text bg-white text-muted" style={{ fontSize: "0.75rem" }}>
+                    From Course
+                  </span>
+                </div>
+              ) : (
+                <select
+                  className="form-select"
+                  value={department}
+                  onChange={(e) => {
+                    const selectedDeptName = e.target.value;
+                    setDepartment(selectedDeptName);
+                    const match = departmentsList.find((d) => d.name === selectedDeptName);
+                    if (match) setDepartmentId(match.id);
+                    setSubDepartment("");
+                  }}
+                  required
+                >
+                  <option value="">Select Department</option>
+                  {departmentsList.map((d) => (
+                    <option key={d.id} value={d.name}>
+                      {d.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
+          </div>
+
           <div className="row g-3 align-items-center mt-1">
             <div className="col-md-6 px-2">
               <label className="qp-config-label">Evaluation Paper Code / Ref</label>
@@ -453,16 +663,18 @@ export function CreateQuestionPaper() {
               />
             </div>
             <div className="col-md-6 px-2">
-              <label className="qp-config-label">Department</label>
+              <label className="qp-config-label">Sub Department</label>
               <select
                 className="form-select"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
+                value={subDepartment}
+                onChange={(e) => setSubDepartment(e.target.value)}
               >
-                <option value="Production">Production</option>
-                <option value="Quality Assurance">Quality Assurance</option>
-                <option value="Maintenance">Maintenance</option>
-                <option value="Operations">Operations</option>
+                <option value="">Select Sub-Department</option>
+                {filteredSubDepts.map((s) => (
+                  <option key={s.id} value={s.name}>
+                    {s.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
@@ -474,10 +686,12 @@ export function CreateQuestionPaper() {
                 value={subDepartment}
                 onChange={(e) => setSubDepartment(e.target.value)}
               >
-                <option value="Section A">Section A</option>
-                <option value="Section B">Section B</option>
-                <option value="Section C">Section C</option>
-                <option value="Section D">Section D</option>
+                <option value="">Select Sub-Department</option>
+                {filteredSubDepts.map((s) => (
+                  <option key={s.id} value={s.name}>
+                    {s.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="col-md-6 px-2">
@@ -487,10 +701,12 @@ export function CreateQuestionPaper() {
                 value={lineSection}
                 onChange={(e) => setLineSection(e.target.value)}
               >
-                <option value="Line 1">Line 1</option>
-                <option value="Line 2">Line 2</option>
-                <option value="Line 3">Line 3</option>
-                <option value="Line 4">Line 4</option>
+                <option value="">Select Line</option>
+                {linesList.map((l) => (
+                  <option key={l.id} value={l.name}>
+                    {l.name}
+                  </option>
+                ))}
               </select>
             </div>
           </div>

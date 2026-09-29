@@ -1,7 +1,10 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import type { ShiftFilter, OperatorData, CertFilter,ShiftStyle,Shift } from "../models/operator";
-const machines = [
+import { getMachines } from "../services/machineService";
+import type { Machine } from "../models/departments";
+
+const fallbackMachines = [
   "CNC Lathe M-01",
   "CNC Lathe M-02",
   "Press Brake P-03",
@@ -36,6 +39,24 @@ function Operator() {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const [formData, setFormData] = useState<OperatorData>(emptyForm);
+  const [machinesList, setMachinesList] = useState<Machine[]>([]);
+
+  useEffect(() => {
+    getMachines()
+      .then((res) => {
+        const data = res?.data?.data;
+        if (Array.isArray(data) && data.length > 0) {
+          setMachinesList(data);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to fetch machines for operator modal:", err);
+      });
+  }, []);
+
+  const machineOptions = machinesList.length > 0
+    ? machinesList.map((m) => m.name)
+    : fallbackMachines;
 
   // --------------------------------------------------
   // Load operators from localStorage
@@ -697,7 +718,7 @@ function Operator() {
                     >
                       <option value="">Select Machine</option>
 
-                      {machines.map((machine) => (
+                      {machineOptions.map((machine) => (
                         <option key={machine} value={machine}>
                           {machine}
                         </option>

@@ -134,6 +134,17 @@
   background-color: #ffffff;
 }
 
+.ctq-filter-select:disabled,
+.filter-select-status:disabled,
+.filter-select:disabled {
+  background-color: #f1f5f9 !important;
+  border-color: #e2e8f0 !important;
+  color: #94a3b8 !important;
+  cursor: not-allowed !important;
+  opacity: 0.65 !important;
+  box-shadow: none !important;
+}
+
 /* ─── Search Input in Filter Bar ──────────────────────────────── */
 .ctq-filter-search-group,
 .filter-search-group {

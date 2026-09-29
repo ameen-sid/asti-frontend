@@ -11,7 +11,7 @@ const getHeaders = () => {
 
 export async function getLines(sortOrder: 'asc' | 'desc' = 'asc', sortBy: string = 'id') {
     const res = await axios.get(
-        `${API_BASE_URL}/v1/lines`,
+        `${API_BASE_URL}/v1/lines?sortBy=${sortBy}&sortOrder=${sortOrder}`,
         getHeaders()
     );
     return res;

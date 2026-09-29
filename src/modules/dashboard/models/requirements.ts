@@ -22,12 +22,12 @@ export type RequirementStatus =
 export interface Requirements{
     id: number;
 
-    unit: string;
     department: string;
+    subDepartment: string;
     section: string;
-    subSection: string;
     line: string;
-    machine: string;
+    shift: string;
+    year: string;
 
     status: RequirementStatus;
 
@@ -52,12 +52,12 @@ export interface Requirements{
 export interface RequirementFormData {
     id: number | null;
 
-    unit: string;
     department: string;
+    subDepartment: string;
     section: string;
-    subSection: string;
     line: string;
-    machine: string;
+    shift: string;
+    year: string;
 
     status: RequirementStatus;
 

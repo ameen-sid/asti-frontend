@@ -16,7 +16,12 @@
     outline-offset: 2px;
   }
 }
-
+.fs-small-button{
+  font-size: 12px !important;
+}
+.asti-bg-blue{
+  background: #1d4ed8;
+}
 .hero {
   position: relative;
 

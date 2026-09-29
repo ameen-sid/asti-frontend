@@ -12,7 +12,7 @@ const getHeaders = () => {
 
 export async function getMachines(sortOrder: 'asc' | 'desc' = 'asc', sortBy: string = 'id') {
     const res = await axios.get(
-        `${API_BASE_URL}/v1/machines`,
+        `${API_BASE_URL}/v1/machines?sortBy=${sortBy}&sortOrder=${sortOrder}`,
         getHeaders()
     );
     return res;

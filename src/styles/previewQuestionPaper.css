@@ -141,18 +141,19 @@
   font-size: 0.84rem;
   font-weight: 700;
   color: #ffffff;
-  background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%);
+  background: #1d4ed8;
+  /* background: linear-gradient(135deg, #6d28d9 0%, #7c3aed 100%); */
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.3);
+  box-shadow: 0 4px 14px #1d4fd84f;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .pqp-btn-print:hover {
-  background: linear-gradient(135deg, #5b21b6 0%, #6d28d9 100%);
-  box-shadow: 0 6px 18px rgba(109, 40, 217, 0.4);
+  background: #1d4ed8;
+  box-shadow: 0 6px 18px #1d4fd880;
   transform: translateY(-1px);
 }
 

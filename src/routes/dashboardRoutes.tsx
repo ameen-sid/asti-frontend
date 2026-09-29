@@ -5,6 +5,7 @@ import DashboardTemplate from "../modules/dashboard/pages/dashboardTemplate";
 import Requirements from "../modules/dashboard/pages/requirements";
 import CTQMonitoring from "../modules/dashboard/pages/ctqMonitoring";
 import ReportSystem from "../modules/dashboard/pages/reportSystem";
+import Dojo from "../modules/dashboard/pages/dojo";
 import ProtectedRoute from "../shared/services/protectedRoutes";
 
 function DashboardRoutes() {
@@ -16,6 +17,7 @@ function DashboardRoutes() {
             <Route index element={<DashboardOverview />} />
             <Route path="attendance" element={<Attendance />} />
             <Route path="requirements" element={<Requirements />} />
+            <Route path="dojo" element={<Dojo />} />
             <Route path="ctq-monitoring" element={<CTQMonitoring />} />
             <Route path="report-system-management" element={<ReportSystem />} />
           </Route>

@@ -1,0 +1,250 @@
+.dojo-page {
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Metric KPI Cards */
+.dojo-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.dojo-kpi-card {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 1.15rem 1.25rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.dojo-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+}
+
+.dojo-kpi-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.35rem;
+}
+
+.dojo-kpi-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1e293b;
+  line-height: 1;
+}
+
+.dojo-kpi-subtext {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.25rem;
+}
+
+.dojo-kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dojo-kpi-icon.blue {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.dojo-kpi-icon.emerald {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.dojo-kpi-icon.amber {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.dojo-kpi-icon.purple {
+  background: #f5f3ff;
+  color: #7c3aed;
+}
+
+/* Filter Card */
+.dojo-filter-bar {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Records Card & Table */
+.dojo-records-section {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e9ecef;
+  padding: 1.5rem;
+}
+
+.dojo-records-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dojo-records-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dojo-records-title {
+  font-weight: 700;
+  margin: 0;
+  font-size: 1.2rem;
+  color: #1e293b;
+}
+
+.dojo-records-subtitle {
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.dojo-records-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.dojo-records-table th {
+  padding: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+  white-space: nowrap;
+  background-color: #f8f9fa;
+}
+
+.dojo-records-table td {
+  padding: 1rem;
+  vertical-align: middle;
+  border-bottom: 1px solid #dee2e6;
+  font-size: 0.88rem;
+  color: #1e293b;
+}
+
+.dojo-records-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Status Badges */
+.dojo-status-badge {
+  padding: 0.28rem 0.85rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.dojo-status-badge.approved,
+.dojo-status-badge.completed {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.dojo-status-badge.pending,
+.dojo-status-badge.planned {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.dojo-status-badge.in-progress {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.dojo-count-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #1d4ed8;
+  background: #eff6ff;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #dbeafe;
+}
+
+.dojo-month-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: #f1f5f9;
+  color: #334155;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.dojo-year-pill {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e0f2fe;
+  color: #0369a1;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+}
+
+/* Action Buttons */
+.dojo-action-btn {
+  background: transparent;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.dojo-action-btn:hover {
+  background: #f8fafc;
+  color: #1d4ed8;
+  border-color: #cbd5e1;
+}
+
+.dojo-action-btn.delete:hover {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}

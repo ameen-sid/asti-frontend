@@ -112,22 +112,7 @@ export default function SubDepartments() {
 
   return (
     <div className="h-auto bg-white shadow-sm rounded border p-4">
-      {/* Breadcrumb */}
-      <nav aria-label="breadcrumb" className="mb-2">
-        <ol className="breadcrumb mb-0 breadcrumb-font-size">
-          <li className="breadcrumb-item">
-            <Link to="/lms/departments" className="breadcrumb-link-primary">
-              Departments
-            </Link>
-          </li>
-          <li className="breadcrumb-item active text-dark fw-bold" aria-current="page">
-            {decodedDeptName}
-          </li>
-          <li className="breadcrumb-item active text-muted" aria-current="page">
-            Sub-Departments
-          </li>
-        </ol>
-      </nav>
+
 
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
