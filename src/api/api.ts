@@ -72,6 +72,12 @@ export const dashboardEndpoints = {
 	GET_CTQ_MONITORING_API: BASE_URL + '/dashboard/ctq-monitoring',
 };
 
+// CMS Defect Endpoints
+export const cmsEndpoints = {
+	GET_DEFECTS_API: '/v1/cms/defects',
+	SAVE_DEFECTS_API: '/v1/cms/defects',
+};
+
 // System / Health Check Endpoints
 export const systemEndpoints = {
 	HEALTH_CHECK_API: '/api/health',
@@ -88,6 +94,7 @@ export const apiEndpoints = {
 	machines: machineEndpoints,
 	requirements: requirementEndpoints,
 	dashboard: dashboardEndpoints,
+	cms: cmsEndpoints,
 	system: systemEndpoints,
 };
 

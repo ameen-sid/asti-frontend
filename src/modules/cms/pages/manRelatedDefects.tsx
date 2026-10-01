@@ -13,16 +13,14 @@ function ManRelatedDefects() {
       </div>
 
       <DefectGraphs
+        category="MAN_RELATED"
         storageKeyA="man-related-defects-graph-a"
         storageKeyB="man-related-defects-graph-b"
         graphATitle="In House Rejection"
         graphBTitle="Customer Complaints"
-        defaultTargetA={1}
-        defaultTargetB={0}
       />
     </div>
   );
 }
 
 export default ManRelatedDefects;
-

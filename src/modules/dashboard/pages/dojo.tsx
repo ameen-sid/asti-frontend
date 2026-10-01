@@ -1,6 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../../../styles/dojo.css";
 import type { DojoRequirement, DojoFormData, DojoStatus } from "../models/dojo";
+import {
+  fetchDojoRequirements,
+  createDojoRequirement,
+  updateDojoRequirement,
+  deleteDojoRequirement,
+} from "../services/dojoRequirementService";
 
 const MONTH_OPTIONS = [
   "January",
@@ -27,41 +33,6 @@ const STATUS_OPTIONS: DojoStatus[] = [
   "Approved",
 ];
 
-const INITIAL_RECORDS: DojoRequirement[] = [
-  {
-    id: 1,
-    month: "October",
-    year: 2026,
-    requirementCount: 45,
-    status: "In Progress",
-    createdAt: "2026-10-01",
-  },
-  {
-    id: 2,
-    month: "October",
-    year: 2026,
-    requirementCount: 30,
-    status: "Planned",
-    createdAt: "2026-10-02",
-  },
-  {
-    id: 3,
-    month: "September",
-    year: 2026,
-    requirementCount: 60,
-    status: "Completed",
-    createdAt: "2026-09-05",
-  },
-  {
-    id: 4,
-    month: "November",
-    year: 2026,
-    requirementCount: 25,
-    status: "Pending",
-    createdAt: "2026-10-03",
-  },
-];
-
 const DEFAULT_FORM_DATA: DojoFormData = {
   id: null,
   month: MONTH_OPTIONS[new Date().getMonth()],
@@ -72,6 +43,8 @@ const DEFAULT_FORM_DATA: DojoFormData = {
 
 function Dojo() {
   const [records, setRecords] = useState<DojoRequirement[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [formData, setFormData] = useState<DojoFormData>(DEFAULT_FORM_DATA);
@@ -82,45 +55,27 @@ function Dojo() {
   const [filterYear, setFilterYear] = useState<number | "">("");
   const [filterStatus, setFilterStatus] = useState("");
 
-  // Load records from localStorage or seed
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetchDojoRequirements({
+        month: filterMonth || undefined,
+        year: filterYear !== "" ? Number(filterYear) : undefined,
+        status: filterStatus || undefined,
+        sortBy: "createdAt",
+        sortOrder: "desc",
+      });
+      setRecords(data);
+    } catch (error) {
+      console.error("Failed to load DOJO requirements:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [filterMonth, filterYear, filterStatus]);
+
   useEffect(() => {
-    const saved = localStorage.getItem("asti_dojo_requirements");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        // Normalize any old structure if needed
-        const normalized = parsed.map((item: any) => ({
-          id: item.id || Date.now(),
-          month: item.month || (item.monthYear ? getMonthNameFromYM(item.monthYear) : "October"),
-          year: item.year || (item.monthYear ? Number(item.monthYear.slice(0, 4)) : 2026),
-          requirementCount: item.requirementCount ?? (Number(item.planned) || 0),
-          status: item.status || "Pending",
-          createdAt: item.createdAt || new Date().toISOString().slice(0, 10),
-        }));
-        setRecords(normalized);
-      } catch {
-        setRecords(INITIAL_RECORDS);
-        localStorage.setItem("asti_dojo_requirements", JSON.stringify(INITIAL_RECORDS));
-      }
-    } else {
-      setRecords(INITIAL_RECORDS);
-      localStorage.setItem("asti_dojo_requirements", JSON.stringify(INITIAL_RECORDS));
-    }
-  }, []);
-
-  const getMonthNameFromYM = (ym: string) => {
-    const parts = ym.split("-");
-    if (parts.length === 2) {
-      const idx = Number(parts[1]) - 1;
-      return MONTH_OPTIONS[idx] || MONTH_OPTIONS[0];
-    }
-    return MONTH_OPTIONS[0];
-  };
-
-  const saveRecords = (newRecords: DojoRequirement[]) => {
-    setRecords(newRecords);
-    localStorage.setItem("asti_dojo_requirements", JSON.stringify(newRecords));
-  };
+    loadData();
+  }, [loadData]);
 
   const handleOpenAddModal = () => {
     setIsEditing(false);
@@ -148,10 +103,15 @@ function Dojo() {
     setShowModal(true);
   };
 
-  const handleDelete = (id: string | number) => {
+  const handleDelete = async (id: string | number) => {
     if (window.confirm("Are you sure you want to delete this DOJO requirement?")) {
-      const updated = records.filter((r) => r.id !== id);
-      saveRecords(updated);
+      try {
+        await deleteDojoRequirement(id);
+        await loadData();
+      } catch (error) {
+        console.error("Failed to delete DOJO requirement:", error);
+        alert("Failed to delete DOJO requirement. Please try again.");
+      }
     }
   };
 
@@ -181,11 +141,8 @@ function Dojo() {
 
   const validateForm = (): boolean => {
     const errors: { [key: string]: string } = {};
-    if (!formData.month) {
-      errors.month = "Please select a month.";
-    }
-    if (!formData.year) {
-      errors.year = "Please select a year.";
+    if (!formData.month || !formData.year) {
+      errors.monthYear = "Please select a valid month and year.";
     }
     if (formData.requirementCount === "" || Number(formData.requirementCount) < 0) {
       errors.requirementCount = "Please enter a valid requirement count (0 or more).";
@@ -197,38 +154,38 @@ function Dojo() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     const count = Number(formData.requirementCount) || 0;
+    setIsSubmitting(true);
 
-    if (isEditing && formData.id != null) {
-      const updated = records.map((r) =>
-        r.id === formData.id
-          ? {
-            ...r,
-            month: formData.month,
-            year: Number(formData.year),
-            requirementCount: count,
-            status: formData.status,
-          }
-          : r
-      );
-      saveRecords(updated);
-    } else {
-      const newRecord: DojoRequirement = {
-        id: Date.now(),
-        month: formData.month,
-        year: Number(formData.year),
-        requirementCount: count,
-        status: formData.status,
-        createdAt: new Date().toISOString().slice(0, 10),
-      };
-      saveRecords([newRecord, ...records]);
+    try {
+      if (isEditing && formData.id != null) {
+        await updateDojoRequirement(formData.id, {
+          month: formData.month,
+          year: Number(formData.year),
+          requirementCount: count,
+          status: formData.status,
+        });
+      } else {
+        await createDojoRequirement({
+          month: formData.month,
+          year: Number(formData.year),
+          requirementCount: count,
+          status: formData.status,
+        });
+      }
+
+      setShowModal(false);
+      await loadData();
+    } catch (error) {
+      console.error("Failed to save DOJO requirement:", error);
+      alert("Failed to save DOJO requirement. Please check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setShowModal(false);
   };
 
   // Filter records
@@ -492,7 +449,14 @@ function Dojo() {
               </tr>
             </thead>
             <tbody>
-              {filteredRecords.length === 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="text-center py-5 text-muted">
+                    <div className="spinner-border spinner-border-sm text-primary me-2" role="status" />
+                    Loading DOJO requirements...
+                  </td>
+                </tr>
+              ) : filteredRecords.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="text-center py-4 text-muted">
                     No DOJO requirements found. Click "Add DOJO Requirement" to create one.
@@ -626,53 +590,55 @@ function Dojo() {
                 <form onSubmit={handleSubmit}>
                   <div className="modal-body py-3">
                     <div className="row g-3">
-                      {/* 1. Month Dropdown */}
-                      <div className="col-md-6">
+                      {/* Month & Year Selection Field */}
+                      <div className="col-12">
                         <label className="form-label fw-semibold text-dark small">
-                          Month <span className="text-danger">*</span>
+                          Month &amp; Year <span className="text-danger">*</span>
                         </label>
-                        <select
-                          className={`form-select ${formErrors.month ? "is-invalid" : ""
-                            }`}
-                          name="month"
-                          value={formData.month}
-                          onChange={handleInputChange}
+                        <input
+                          type="month"
+                          className={`form-control ${
+                            formErrors.monthYear ? "is-invalid" : ""
+                          }`}
+                          value={
+                            formData.year && formData.month
+                              ? `${formData.year}-${String(
+                                  MONTH_OPTIONS.indexOf(formData.month) + 1
+                                ).padStart(2, "0")}`
+                              : ""
+                          }
+                          onChange={(e) => {
+                            const val = e.target.value; // "YYYY-MM"
+                            if (val && val.includes("-")) {
+                              const [yStr, mStr] = val.split("-");
+                              const mIdx = parseInt(mStr, 10) - 1;
+                              const mName = MONTH_OPTIONS[mIdx] || "";
+                              setFormData((prev) => ({
+                                ...prev,
+                                month: mName,
+                                year: parseInt(yStr, 10),
+                              }));
+                            } else {
+                              setFormData((prev) => ({
+                                ...prev,
+                                month: "",
+                                year: "",
+                              }));
+                            }
+                            if (formErrors.monthYear) {
+                              setFormErrors((prev) => {
+                                const copy = { ...prev };
+                                delete copy.monthYear;
+                                return copy;
+                              });
+                            }
+                          }}
                           required
-                        >
-                          <option value="">-- Select Month --</option>
-                          {MONTH_OPTIONS.map((m) => (
-                            <option key={m} value={m}>
-                              {m}
-                            </option>
-                          ))}
-                        </select>
-                        {formErrors.month && (
-                          <div className="invalid-feedback">{formErrors.month}</div>
-                        )}
-                      </div>
-
-                      {/* 2. Year Dropdown */}
-                      <div className="col-md-6">
-                        <label className="form-label fw-semibold text-dark small">
-                          Year <span className="text-danger">*</span>
-                        </label>
-                        <select
-                          className={`form-select ${formErrors.year ? "is-invalid" : ""
-                            }`}
-                          name="year"
-                          value={formData.year}
-                          onChange={handleInputChange}
-                          required
-                        >
-                          <option value="">-- Select Year --</option>
-                          {YEAR_OPTIONS.map((y) => (
-                            <option key={y} value={y}>
-                              {y}
-                            </option>
-                          ))}
-                        </select>
-                        {formErrors.year && (
-                          <div className="invalid-feedback">{formErrors.year}</div>
+                        />
+                        {formErrors.monthYear && (
+                          <div className="invalid-feedback">
+                            {formErrors.monthYear}
+                          </div>
                         )}
                       </div>
 
@@ -735,9 +701,23 @@ function Dojo() {
                     </button>
                     <button
                       type="submit"
-                      className="btn rounded-pill gradient-bg text-white px-4"
+                      className="btn rounded-pill gradient-bg text-white px-4 d-inline-flex align-items-center gap-2"
+                      disabled={isSubmitting}
                     >
-                      {isEditing ? "Update" : "Save"}
+                      {isSubmitting && (
+                        <span
+                          className="spinner-border spinner-border-sm"
+                          role="status"
+                          aria-hidden="true"
+                        />
+                      )}
+                      {isSubmitting
+                        ? isEditing
+                          ? "Updating..."
+                          : "Saving..."
+                        : isEditing
+                          ? "Update"
+                          : "Save"}
                     </button>
                   </div>
                 </form>

@@ -13,16 +13,14 @@ function TotalDefects() {
       </div>
 
       <DefectGraphs
+        category="TOTAL"
         storageKeyA="total-defects-graph-a"
         storageKeyB="total-defects-graph-b"
         graphATitle="In House Rejection"
         graphBTitle="Customer Complaints"
-        defaultTargetA={3}
-        defaultTargetB={7}
       />
     </div>
   );
 }
 
 export default TotalDefects;
-
